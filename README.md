@@ -13,16 +13,8 @@ This project provides a deep dive into historical sales data to evaluate busines
 - **Market Segment:** The **Medium** deal size category is the most critical segment, driving both volume and value.
 - **Seasonality:** Identified a recurring revenue spike in **Q4**, suggesting a need for increased inventory in September.
 
-## 📊 Visualization Highlights
-Since the `.pbix` file is private/proprietary, you can view the dashboard results below:
-
-### 1. Overall Sales Dashboard
-![Dashboard Overview](Visuals/dashboard_overview.png)
-
-### 2. Deal Size & Product Performance
-![Deal Size Analysis](Visuals/dealsize_analysis.png)
-
 ## 🗂 Project Structure
 - `SQL_Scripts/`: Contains the full SQL workflow from cleaning to final analysis.
 - `Visuals/`: High-resolution screenshots of the Power BI insights.
 - `Analysis_Report.pdf`: Comprehensive professional report with executive summaries.
+
