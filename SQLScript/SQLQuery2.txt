@@ -1,0 +1,82 @@
+
+SELECT [ORDERNUMBER],[QUANTITYORDERED],[PRICEEACH],[SALES]
+FROM sales_data
+WHERE SALES != QUANTITYORDERED*PRICEEACH
+--We have wrong values in the sales column.
+SELECT [ORDERNUMBER],[SALES], PRICEEACH*QUANTITYORDERED as CALC_SALES,
+       Case 
+	   When PRICEEACH=100 then 'Possible Price Limit Problem'
+	   Else 'Calculation Problem'
+	   END as problem_type
+From sales_data
+Where SALES != PRICEEACH*QUANTITYORDERED 
+-- Validated revenue by prioritizing 'SALES' for 100.00 price-capped items and 'Price*Quantity' for all others to ensure calculation accuracy.
+
+SELECT DEALSIZE,MAX(SALES) AS max_sale,MIN(SALES) as min_sale
+FROM sales_data
+GROUP BY DEALSIZE
+
+
+SELECT 
+    [ORDERNUMBER],
+    [QUANTITYORDERED],
+    [PRICEEACH], 
+    [SALES] AS ORIGINAL_SALES, 
+    CASE 
+        WHEN [PRICEEACH] = 100 THEN [SALES]
+        ELSE ([QUANTITYORDERED] * [PRICEEACH]) 
+    END AS CALC_SALES,
+    [STATUS], 
+    [MONTH_ID], 
+    [YEAR_ID],
+    [PRODUCTLINE],
+    [CUSTOMERNAME],
+    [CITY],
+    [COUNTRY], 
+    CONCAT([CONTACTLASTNAME], ' ', [CONTACTFIRSTNAME]) AS FULL_NAME, 
+    [DEALSIZE]
+INTO refined_sales
+FROM sales_data;
+
+SELECT [MONTH_ID],SUM([CALC_SALES]) AS total_monthly_sale
+FROM refined_sales
+WHERE YEAR_ID IN ('2003','2004')
+GROUP BY MONTH_ID
+ORDER BY SUM([CALC_SALES]) desc
+--Data reveals that the highest revenue is consistently achieved during the final five months of the year.
+
+
+SELECT YEAR_ID,SUM(CALC_SALES) as total_yearly_sale
+From refined_sales
+WHERE YEAR_ID IN ('2003','2004')
+Group by YEAR_ID
+Order by YEAR_ID
+---- Sales increased by 90,610,255 in 2004 compared to 2003, representing a solid YoY growth rate of 32.96%.
+
+Select PRODUCTLINE,SUM(CALC_SALES) as total_sale_by_product
+From refined_sales
+GROUP BY PRODUCTLINE
+ORDER BY total_sale_by_product desc
+
+
+SELECT TOP 5 COUNTRY, SUM(CALC_SALES) AS total_revenue
+FROM refined_sales
+GROUP BY COUNTRY
+ORDER BY total_revenue DESC;
+--Top 5 countries
+
+SELECT 
+    STATUS, 
+    COUNT(ORDERNUMBER) AS order_count,
+    SUM(CALC_SALES) AS total_value
+FROM refined_sales
+GROUP BY STATUS
+ORDER BY total_value DESC;
+
+SELECT[DEALSIZE],COUNT(ORDERNUMBER) AS total_order,SUM(CALC_SALES) as total_sale
+From refined_sales
+Group by DEALSIZE
+Order by total_sale desc
+--The 'Medium' deal size category generates both the highest number of orders and the largest share of total revenue.
+
+
